@@ -18,13 +18,6 @@ import { cn } from "@/lib/utils"
 import { useEditorStore } from "@/store/editor-store"
 import { type EditorLanguage, MonacoTheme } from "@/types"
 
-const navigationItems = [
-    { label: "Editor", isActive: true },
-    { label: "Dashboard", isActive: false },
-    { label: "Challenges", isActive: false },
-    { label: "Paths", isActive: false },
-]
-
 const objectiveItems = [
     "Create a recursive function buildFractal(depth).",
     "Return an array containing nested instances of itself.",
@@ -121,7 +114,7 @@ interface EditorPaneProps {
 
 function EditorPane({ language, code, onCodeChange }: EditorPaneProps) {
     return (
-        <section className="flex h-full min-h-0 flex-col bg-[#090b11]">
+        <section className="flex h-full min-h-0 flex-col bg-[#090b11] overflow-x-hidden overflow-y-hidden">
             <div className="shrink-0 border-b border-white/10 bg-black/35 px-3 py-2 sm:px-4">
                 <div className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-[#0c0f17] px-2.5 py-1 text-[0.7rem] font-medium text-zinc-300">
                     <Code2 className="size-3.5 text-[#8f94ff]" />
@@ -158,24 +151,9 @@ export default function PlaygroundRoute() {
     return (
         <div className="flex h-dvh flex-col overflow-hidden bg-[radial-gradient(90%_130%_at_0%_0%,#121528_0%,transparent_50%),radial-gradient(110%_120%_at_100%_100%,#0f1f2d_0%,transparent_40%),#06070a] text-foreground">
             <header className="z-20 h-14 shrink-0 border-b border-white/10 bg-[#05060a]/90 backdrop-blur-sm">
-                <div className="mx-auto flex h-full w-full max-w-[1700px] items-center justify-between px-3 sm:px-4 lg:px-6">
+                <div className="mx-auto flex h-full w-full items-center justify-between px-3 sm:px-4 lg:px-6">
                     <nav className="flex items-center gap-1">
-                        {navigationItems.map((item) => (
-                            <Button
-                                key={item.label}
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                    "h-8 rounded-md px-2.5 text-xs font-medium",
-                                    item.isActive
-                                        ? "bg-[#1b1e2f] text-[#9ea2ff] hover:bg-[#22263a] hover:text-[#b7baff]"
-                                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
-                                )}
-                            >
-                                {item.label}
-                            </Button>
-                        ))}
+                        CodeXP
                     </nav>
 
                     <div className="flex items-center gap-1.5 sm:gap-2">
@@ -215,7 +193,7 @@ export default function PlaygroundRoute() {
                 </div>
             </header>
 
-            <main className="mx-auto min-h-0 w-full max-w-[1700px] flex-1">
+            <main className="mx-auto min-h-0 w-full flex-1">
                 <div className="flex h-full min-h-0 flex-col lg:hidden">
                     <div className="min-h-0 basis-[44%] border-b border-white/10">
                         <DetailsPane description={description} />
@@ -231,7 +209,7 @@ export default function PlaygroundRoute() {
 
                 <ResizablePanelGroup
                 >
-                    <ResizablePanel>
+                    <ResizablePanel minSize={400} maxSize={500}>
                         <DetailsPane
                             description={description}
                             className="border-r border-white/10"
@@ -241,7 +219,7 @@ export default function PlaygroundRoute() {
                         withHandle
                         className="bg-white/10 hover:bg-[#8f94ff]/35 data-[separator=active]:bg-[#8f94ff]/50"
                     />
-                    <ResizablePanel>
+                    <ResizablePanel minSize={400}>
                         <EditorPane
                             language={language}
                             code={code}
