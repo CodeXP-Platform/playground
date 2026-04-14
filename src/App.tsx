@@ -4,7 +4,7 @@ import { appRouter } from "@/pages/router"
 
 function App() {
   return (
-    <div className="dark min-h-dvh bg-background text-foreground antialiased">
+    <div className="dark h-dvh overflow-hidden bg-background text-foreground antialiased">
       <RouterProvider router={appRouter} />
     </div>
   )

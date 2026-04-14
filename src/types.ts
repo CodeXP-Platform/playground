@@ -1,5 +1,7 @@
 export enum AppRoute {
   Start = "/start",
+  Playground = "/playground",
+  Fallback = "*",
 }
 
 export enum QueryParamKey {
