@@ -130,7 +130,7 @@ export default function StartRoute() {
 
     return (
         <div className="flex h-dvh items-center justify-center overflow-hidden bg-[radial-gradient(130%_120%_at_10%_5%,rgba(68,94,255,0.24),transparent_45%),radial-gradient(120%_100%_at_90%_95%,rgba(0,191,165,0.18),transparent_50%),#06070a] p-4 text-foreground">
-            <Card className="w-full max-w-md border-white/10 bg-black/45 shadow-2xl backdrop-blur-xl">
+            <Card className="w-full border-white/10 bg-black/45 shadow-2xl backdrop-blur-xl">
                 <CardHeader>
                     <div className="mb-1 inline-flex w-fit items-center gap-2 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[0.67rem] font-semibold uppercase tracking-[0.14em] text-zinc-300">
                         <KeyRound className="size-3.5 text-[#8f94ff]" />
