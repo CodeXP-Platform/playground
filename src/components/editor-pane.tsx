@@ -1,14 +1,17 @@
+import type { Solution } from "@/services/solutions/types";
 import { MonacoTheme, type EditorLanguage } from "@/types";
 import { Editor } from "@monaco-editor/react";
 import { Code2 } from "lucide-react";
 import { use } from "react";
 
 interface EditorPaneProps {
-    solutionsPromise: Promise<any>;
+    solutionsPromise: Promise<Solution[]>;
 }
 
 export function EditorPane({ solutionsPromise }: EditorPaneProps) {
     const solutions = use(solutionsPromise);
+
+    const current = solutions[0];
 
     return (
         <section className="flex h-full min-h-0 flex-col bg-[#090b11] overflow-x-hidden overflow-y-hidden">
@@ -20,11 +23,10 @@ export function EditorPane({ solutionsPromise }: EditorPaneProps) {
             </div>
 
             <div className="min-h-0 flex-1">
-                {/*<Editor
+                <Editor
                     theme={MonacoTheme.Dark}
-                    language={language}
-                    value={code}
-                    onChange={(value) => onCodeChange(value ?? "")}
+                    language={current.language}
+                    value={current.code}
                     options={{
                         automaticLayout: true,
                         minimap: { enabled: false },
@@ -36,10 +38,7 @@ export function EditorPane({ solutionsPromise }: EditorPaneProps) {
                         tabSize: 2,
                         wordWrap: "off",
                     }}
-                />*/}
-                {solutions.map((s) => (
-                    <p>{JSON.stringify(s)}</p>
-                ))}
+                />
             </div>
         </section>
     );

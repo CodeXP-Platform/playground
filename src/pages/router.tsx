@@ -1,10 +1,9 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
-import PlaygroundRoute, {
-    loader as playgroundLoader,
-} from "@/pages/playground/route.tsx";
 import StartRoute from "@/pages/start/route.tsx";
 import { AppRoute } from "@/types";
+import PlaygroundRoute from "./playground/route";
+import { playgroundLoaderData } from "./playground/loader";
 
 export const appRouter = createBrowserRouter([
     {
@@ -14,7 +13,7 @@ export const appRouter = createBrowserRouter([
     {
         path: AppRoute.Playground,
         element: <PlaygroundRoute />,
-        loader: playgroundLoader,
+        loader: playgroundLoaderData,
     },
     {
         path: AppRoute.Fallback,

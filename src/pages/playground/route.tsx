@@ -6,31 +6,15 @@ import {
 import { UserMenu } from "@/components/user-menu";
 import { Suspense } from "react";
 import { useLoaderData } from "react-router-dom";
-import { ChallengesController } from "@/services/challenges/controller";
 import { EditorPane } from "@/components/editor-pane";
 import { DetailsPane } from "@/components/details-pane";
-import { SolutionsController } from "@/services/solutions/controller";
-
-export function loader({ request }: { request: Request }) {
-    const url = new URL(request.url);
-    const challengeId = url.searchParams.get("challenge_id");
-
-    if (!challengeId) {
-        return { challengeId: null, challengePromise: null };
-    }
-
-    return {
-        challengeId,
-        challengePromise: ChallengesController.getChallengeById(challengeId),
-        solutionsPromise: SolutionsController.getSolutions(challengeId),
-    };
-}
+import type { PlaygroundLoaderData } from "./loader";
 
 export default function PlaygroundRoute() {
     const { challengeId, challengePromise, solutionsPromise } =
-        useLoaderData() as any;
+        useLoaderData() as PlaygroundLoaderData;
 
-    if (!challengeId) {
+    if (!challengeId || !challengePromise || !solutionsPromise) {
         return null;
     }
 
