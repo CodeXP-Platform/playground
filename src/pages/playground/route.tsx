@@ -1,4 +1,3 @@
-import { UserMenu } from "@/components/user-menu";
 import { Suspense } from "react";
 import { useLoaderData } from "react-router-dom";
 import { PlaygroundWorkspace } from "@/components/playground-workspace";
@@ -14,14 +13,6 @@ export default function PlaygroundRoute() {
 
     return (
         <div className="flex h-dvh flex-col overflow-hidden bg-[radial-gradient(90%_130%_at_0%_0%,#121528_0%,transparent_50%),radial-gradient(110%_120%_at_100%_100%,#0f1f2d_0%,transparent_40%),#06070a] text-foreground">
-            <header className="z-20 h-14 shrink-0 border-b border-white/10 bg-[#05060a]/90 backdrop-blur-sm">
-                <div className="mx-auto flex h-full w-full items-center justify-between px-3 sm:px-4 lg:px-6">
-                    <nav className="flex items-center gap-1">CodeXP</nav>
-
-                    <UserMenu />
-                </div>
-            </header>
-
             <main className="mx-auto min-h-0 w-full flex-1">
                 <Suspense
                     fallback={

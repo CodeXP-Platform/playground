@@ -9,7 +9,7 @@ export function playgroundLoaderData({
     request: Request;
 }): PlaygroundLoaderData {
     const url = new URL(request.url);
-    const challengeId = url.searchParams.get("challenge_id");
+    const challengeId = url.searchParams.get("challenge");
 
     if (!challengeId) {
         return {
