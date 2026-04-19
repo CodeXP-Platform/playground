@@ -1,13 +1,7 @@
-import {
-    ResizableHandle,
-    ResizablePanel,
-    ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { UserMenu } from "@/components/user-menu";
 import { Suspense } from "react";
 import { useLoaderData } from "react-router-dom";
-import { EditorPane } from "@/components/editor-pane";
-import { DetailsPane } from "@/components/details-pane";
+import { PlaygroundWorkspace } from "@/components/playground-workspace";
 import type { PlaygroundLoaderData } from "./loader";
 
 export default function PlaygroundRoute() {
@@ -29,38 +23,19 @@ export default function PlaygroundRoute() {
             </header>
 
             <main className="mx-auto min-h-0 w-full flex-1">
-                {/*<div className="flex h-full min-h-0 flex-col lg:hidden">
-                    <div className="min-h-0 basis-[44%] border-b border-white/10">
-                        <DetailsPane description={description} />
-                    </div>
-                    <div className="min-h-0 flex-1">
-                        <EditorPane
-                            language={language}
-                            code={code}
-                            onCodeChange={setCode}
-                        />
-                    </div>
-                </div>*/}
-
-                <ResizablePanelGroup>
-                    <ResizablePanel minSize={400} maxSize={500}>
-                        <Suspense fallback={"Loading Challenge"}>
-                            <DetailsPane
-                                challengeId={challengeId}
-                                challengePromise={challengePromise}
-                            />
-                        </Suspense>
-                    </ResizablePanel>
-                    <ResizableHandle
-                        withHandle
-                        className="bg-white/10 hover:bg-[#8f94ff]/35 data-[separator=active]:bg-[#8f94ff]/50"
+                <Suspense
+                    fallback={
+                        <div className="flex h-full items-center justify-center text-white/50">
+                            Loading Workspace...
+                        </div>
+                    }
+                >
+                    <PlaygroundWorkspace
+                        challengeId={challengeId}
+                        challengePromise={challengePromise}
+                        solutionsPromise={solutionsPromise}
                     />
-                    <ResizablePanel minSize={400}>
-                        <Suspense fallback={"Loading Solutions"}>
-                            <EditorPane solutionsPromise={solutionsPromise} />
-                        </Suspense>
-                    </ResizablePanel>
-                </ResizablePanelGroup>
+                </Suspense>
             </main>
         </div>
     );
