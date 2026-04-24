@@ -163,10 +163,7 @@ export function PlaygroundWorkspace({
             />
 
             {/* Main Workspace */}
-            <ResizablePanelGroup
-                direction="horizontal"
-                className="flex-1 min-h-0"
-            >
+            <ResizablePanelGroup className="flex-1 min-h-0">
                 {/* Left Panel: Objective & Tests */}
                 <ResizablePanel minSize={200} defaultSize={250} maxSize={400}>
                     <ChallengeDetail challenge={challenge} />
@@ -178,7 +175,7 @@ export function PlaygroundWorkspace({
                 />
 
                 {/* Center Panel: Editor */}
-                <ResizablePanel minSize={30} defaultSize={50}>
+                <ResizablePanel minSize={500}>
                     <section className="flex h-full flex-col bg-[#000000]">
                         <div className="flex items-center justify-between shrink-0 h-10 border-b border-white/5 bg-[#000000]">
                             <div className="h-full flex items-center px-4 bg-[#09090B] border-t-2 border-[#7B8BFF] text-[12px] font-mono text-white/90">
