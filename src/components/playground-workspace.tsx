@@ -43,9 +43,9 @@ export function PlaygroundWorkspace({
     const challenge = use(challengePromise);
     const solutions = use(solutionsPromise);
 
-    const [currentSolution, setCurrentSolution] = useState<Solution>(
-        solutions[0],
-    );
+    const [currentSolution, setCurrentSolution] = useState<
+        Solution | undefined
+    >(solutions[0]);
     const [code, setCode] = useState(currentSolution?.code || "");
     const [isAssistantOpen, setIsAssistantOpen] = useState(true);
 
@@ -154,6 +154,15 @@ export function PlaygroundWorkspace({
         }
     };
 
+    if (!currentSolution) {
+        return (
+            <div className="flex h-full w-full items-center justify-center bg-[#111113] rounded-xl shadow-2xl text-white/50 text-sm">
+                No solutions found for this challenge. Please make sure the
+                student token has initialized a solution.
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col h-full w-full bg-[#111113] rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
             <PlaygroundHeader
@@ -165,7 +174,7 @@ export function PlaygroundWorkspace({
             {/* Main Workspace */}
             <ResizablePanelGroup className="flex-1 min-h-0">
                 {/* Left Panel: Objective & Tests */}
-                <ResizablePanel minSize={200} defaultSize={250} maxSize={400}>
+                <ResizablePanel minSize={250} defaultSize={300} maxSize={400}>
                     <ChallengeDetail challenge={challenge} />
                 </ResizablePanel>
 
@@ -211,7 +220,7 @@ export function PlaygroundWorkspace({
                             </div>
                         </div>
 
-                        <div className="flex-1 py-4 overflow-hidden">
+                        <div className="flex-1 py-4">
                             <Editor
                                 theme={MonacoTheme.Dark}
                                 language={currentSolution.language}
@@ -247,8 +256,8 @@ export function PlaygroundWorkspace({
                 <ResizablePanel
                     ref={assistantPanelRef}
                     collapsible={true}
-                    minSize={200}
-                    defaultSize={250}
+                    minSize={250}
+                    defaultSize={300}
                     maxSize={400}
                     collapsedSize={0}
                     onCollapse={() => setIsAssistantOpen(false)}
