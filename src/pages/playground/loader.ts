@@ -36,7 +36,7 @@ export function playgroundLoaderData({
 
 export interface PlaygroundLoaderData {
     challengeId: string | null;
-    codedbTemplateId: string | null;
+    codeTemplateId: string | null;
     challengePromise: Promise<Challenge> | null;
     solutionsPromise: Promise<Solution[]> | null;
     testsPromise: Promise<TestCase[]> | null;

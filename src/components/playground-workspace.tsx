@@ -50,7 +50,7 @@ export function PlaygroundWorkspace({
 
     const [currentSolution, setCurrentSolution] = useState<
         Solution | undefined
-    >(solutions[0]);
+    >(solutions.find((s) => s.codeTemplateId === codeTemplateId));
 
     const [currentTests, setCurrentTests] = useState(tests);
 
@@ -194,9 +194,9 @@ export function PlaygroundWorkspace({
 
                 {/* Center Panel: Editor */}
                 <ResizablePanel minSize={500}>
-                    <section className="flex h-full flex-col bg-[#000000]">
-                        <div className="flex items-center justify-between shrink-0 h-10 border-b border-white/5 bg-[#000000]">
-                            <div className="h-full flex items-center px-4 bg-[#09090B] border-t-2 border-[#7B8BFF] text-[12px] font-mono text-white/90">
+                    <section className="flex h-full flex-col">
+                        <div className="flex items-center justify-between shrink-0 border-b border-white/5 ">
+                            <div className="h-full flex items-center p-4 border-t-2 border-[#7B8BFF] text-xs font-mono">
                                 solution.
                                 {currentSolution.language === "python"
                                     ? "py"
@@ -229,7 +229,7 @@ export function PlaygroundWorkspace({
                             </div>
                         </div>
 
-                        <div className="flex-1 py-4">
+                        <div className="flex-1">
                             <Editor
                                 theme={MonacoTheme.Dark}
                                 language={currentSolution.language}
@@ -272,7 +272,7 @@ export function PlaygroundWorkspace({
                     onCollapse={() => setIsAssistantOpen(false)}
                     onExpand={() => setIsAssistantOpen(true)}
                 >
-                    <aside className="flex h-full flex-col bg-[#111113] text-white">
+                    <aside className="flex h-full flex-col">
                         <div className="flex items-center justify-between shrink-0 h-10 border-b border-white/5 px-4 bg-[#111113]">
                             <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.15em] text-white/50 uppercase">
                                 <div className="size-1.5 rounded-full bg-[#7B8BFF] shadow-[0_0_8px_rgba(123,139,255,0.8)]"></div>
