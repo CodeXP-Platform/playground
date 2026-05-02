@@ -169,6 +169,7 @@ export function PlaygroundWorkspace({
                 solutions={solutions}
                 currentSolution={currentSolution}
                 setCurrentSolution={setCurrentSolution}
+                challenge={challenge}
             />
 
             {/* Main Workspace */}
