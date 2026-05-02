@@ -21,7 +21,9 @@ export default function StartRoute() {
 
         setUser({ ...jwtPayload, jwt: response.jwt });
 
-        navigate(`/playground?challenge=${searchParams.get("challenge")}`);
+        navigate(
+            `/playground?challenge=${searchParams.get("challenge")}&code_template=${searchParams.get("code_template")}`,
+        );
     }
 
     useEffect(() => {

@@ -1,6 +1,7 @@
 export interface Solution {
     solutionId: string;
     challengeId: string;
+    codeTemplateId: string;
     authorId: string;
     language: Language;
     code: string;

@@ -19,7 +19,7 @@ import {
     ResizablePanelGroup,
 } from "./ui/resizable";
 import { useExecutionStore } from "@/store/use-execution";
-import type { Challenge } from "@/services/challenges/types";
+import type { Challenge, TestCase } from "@/services/challenges/types";
 import { PlaygroundHeader } from "./playground-header";
 import { ChallengeDetail } from "./challenge-detail";
 import { Button } from "./ui/button";
@@ -31,6 +31,8 @@ interface PlaygroundWorkspaceProps {
     challengeId: string;
     challengePromise: Promise<Challenge>;
     solutionsPromise: Promise<Solution[]>;
+    codeTemplateId: string;
+    testsPromise: Promise<TestCase[]>;
 }
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -39,13 +41,19 @@ export function PlaygroundWorkspace({
     challengeId,
     challengePromise,
     solutionsPromise,
+    codeTemplateId,
+    testsPromise,
 }: PlaygroundWorkspaceProps) {
     const challenge = use(challengePromise);
     const solutions = use(solutionsPromise);
+    const tests = use(testsPromise);
 
-    const [currentSolution, setCurrentSolution] = useState<Solution>(
-        solutions[0],
-    );
+    const [currentSolution, setCurrentSolution] = useState<
+        Solution | undefined
+    >(solutions.find((s) => s.codeTemplateId === codeTemplateId));
+
+    const [currentTests, setCurrentTests] = useState(tests);
+
     const [code, setCode] = useState(currentSolution?.code || "");
     const [isAssistantOpen, setIsAssistantOpen] = useState(true);
 
@@ -154,18 +162,28 @@ export function PlaygroundWorkspace({
         }
     };
 
+    if (!currentSolution) {
+        return (
+            <div className="flex h-full w-full items-center justify-center bg-[#111113] rounded-xl shadow-2xl text-white/50 text-sm">
+                No solutions found for this challenge. Please make sure the
+                student token has initialized a solution.
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col h-full w-full bg-[#111113] rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
             <PlaygroundHeader
                 solutions={solutions}
                 currentSolution={currentSolution}
                 setCurrentSolution={setCurrentSolution}
+                challenge={challenge}
             />
 
             {/* Main Workspace */}
             <ResizablePanelGroup className="flex-1 min-h-0">
                 {/* Left Panel: Objective & Tests */}
-                <ResizablePanel minSize={200} defaultSize={250} maxSize={400}>
+                <ResizablePanel minSize={250} defaultSize={300} maxSize={400}>
                     <ChallengeDetail challenge={challenge} />
                 </ResizablePanel>
 
@@ -176,9 +194,9 @@ export function PlaygroundWorkspace({
 
                 {/* Center Panel: Editor */}
                 <ResizablePanel minSize={500}>
-                    <section className="flex h-full flex-col bg-[#000000]">
-                        <div className="flex items-center justify-between shrink-0 h-10 border-b border-white/5 bg-[#000000]">
-                            <div className="h-full flex items-center px-4 bg-[#09090B] border-t-2 border-[#7B8BFF] text-[12px] font-mono text-white/90">
+                    <section className="flex h-full flex-col">
+                        <div className="flex items-center justify-between shrink-0 border-white/5 ">
+                            <div className="h-full flex items-center p-4 border-t border-[#7B8BFF] text-xs font-mono">
                                 solution.
                                 {currentSolution.language === "python"
                                     ? "py"
@@ -211,7 +229,7 @@ export function PlaygroundWorkspace({
                             </div>
                         </div>
 
-                        <div className="flex-1 py-4 overflow-hidden">
+                        <div className="flex-1">
                             <Editor
                                 theme={MonacoTheme.Dark}
                                 language={currentSolution.language}
@@ -247,14 +265,14 @@ export function PlaygroundWorkspace({
                 <ResizablePanel
                     ref={assistantPanelRef}
                     collapsible={true}
-                    minSize={200}
-                    defaultSize={250}
+                    minSize={250}
+                    defaultSize={300}
                     maxSize={400}
                     collapsedSize={0}
                     onCollapse={() => setIsAssistantOpen(false)}
                     onExpand={() => setIsAssistantOpen(true)}
                 >
-                    <aside className="flex h-full flex-col bg-[#111113] text-white">
+                    <aside className="flex h-full flex-col">
                         <div className="flex items-center justify-between shrink-0 h-10 border-b border-white/5 px-4 bg-[#111113]">
                             <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.15em] text-white/50 uppercase">
                                 <div className="size-1.5 rounded-full bg-[#7B8BFF] shadow-[0_0_8px_rgba(123,139,255,0.8)]"></div>

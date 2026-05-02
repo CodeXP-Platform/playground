@@ -16,6 +16,8 @@ http.interceptors.request.use(
         // Obtenemos el token más actualizado del store justo antes de la petición
         const token = useAuth.getState().user?.jwt;
 
+        console.log("Token", token);
+
         // Si existe el token, lo inyectamos en las cabeceras
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
