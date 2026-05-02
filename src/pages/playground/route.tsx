@@ -4,10 +4,21 @@ import { PlaygroundWorkspace } from "@/components/playground-workspace";
 import type { PlaygroundLoaderData } from "./loader";
 
 export default function PlaygroundRoute() {
-    const { challengeId, challengePromise, solutionsPromise } =
-        useLoaderData() as PlaygroundLoaderData;
+    const {
+        challengeId,
+        challengePromise,
+        solutionsPromise,
+        codeTemplateId,
+        testsPromise,
+    } = useLoaderData() as PlaygroundLoaderData;
 
-    if (!challengeId || !challengePromise || !solutionsPromise) {
+    if (
+        !challengeId ||
+        !challengePromise ||
+        !solutionsPromise ||
+        !testsPromise ||
+        !codeTemplateId
+    ) {
         return null;
     }
 
@@ -25,6 +36,8 @@ export default function PlaygroundRoute() {
                         challengeId={challengeId}
                         challengePromise={challengePromise}
                         solutionsPromise={solutionsPromise}
+                        codeTemplateId={codeTemplateId}
+                        testsPromise={testsPromise}
                     />
                 </Suspense>
             </main>

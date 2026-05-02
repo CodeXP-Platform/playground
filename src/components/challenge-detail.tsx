@@ -13,7 +13,7 @@ function dedent(str: string) {
     if (!str) return "";
 
     // Convert literal "\n" strings to actual newlines if they exist
-    let normalizedStr = str.replace(/\\n/g, "\n");
+    const normalizedStr = str.replace(/\\n/g, "\n");
 
     // Trim every line individually to remove any leading/trailing whitespace
     // that might cause markdown to treat headings as code blocks or text
@@ -27,7 +27,7 @@ export function ChallengeDetail({ challenge }: { challenge: Challenge }) {
     return (
         <Tabs
             defaultValue="instructions"
-            className="flex flex-col h-full w-full bg-[#111113] text-white"
+            className="flex flex-col h-full w-full"
         >
             <div className="shrink-0 border-b border-white/5 flex p-2">
                 <TabsList className="flex w-full h-full bg-transparent p-0 gap-0">
@@ -42,7 +42,7 @@ export function ChallengeDetail({ challenge }: { challenge: Challenge }) {
             >
                 <ScrollArea className="h-full w-full">
                     <div className="p-4">
-                        <div className="text-[13px] text-[#A1A1A9] leading-relaxed prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0 prose-pre:border-none prose-a:text-[#7B8BFF] hover:prose-a:text-[#9AA8FF]">
+                        <div className="text-sm leading-relaxed prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0 prose-pre:border-none prose-a:text-[#7B8BFF] hover:prose-a:text-[#9AA8FF]">
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 rehypePlugins={[rehypeRaw]}

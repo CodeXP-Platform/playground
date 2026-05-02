@@ -19,7 +19,7 @@ import {
     ResizablePanelGroup,
 } from "./ui/resizable";
 import { useExecutionStore } from "@/store/use-execution";
-import type { Challenge } from "@/services/challenges/types";
+import type { Challenge, TestCase } from "@/services/challenges/types";
 import { PlaygroundHeader } from "./playground-header";
 import { ChallengeDetail } from "./challenge-detail";
 import { Button } from "./ui/button";
@@ -31,6 +31,8 @@ interface PlaygroundWorkspaceProps {
     challengeId: string;
     challengePromise: Promise<Challenge>;
     solutionsPromise: Promise<Solution[]>;
+    codeTemplateId: string;
+    testsPromise: Promise<TestCase[]>;
 }
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -39,13 +41,19 @@ export function PlaygroundWorkspace({
     challengeId,
     challengePromise,
     solutionsPromise,
+    codeTemplateId,
+    testsPromise,
 }: PlaygroundWorkspaceProps) {
     const challenge = use(challengePromise);
     const solutions = use(solutionsPromise);
+    const tests = use(testsPromise);
 
     const [currentSolution, setCurrentSolution] = useState<
         Solution | undefined
     >(solutions[0]);
+
+    const [currentTests, setCurrentTests] = useState(tests);
+
     const [code, setCode] = useState(currentSolution?.code || "");
     const [isAssistantOpen, setIsAssistantOpen] = useState(true);
 

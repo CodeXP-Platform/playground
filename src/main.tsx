@@ -6,10 +6,10 @@ import { Toaster } from "./components/ui/sonner.tsx";
 import { ThemeProvider } from "next-themes";
 
 createRoot(document.getElementById("root")!).render(
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <StrictMode>
+    <StrictMode>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <Toaster />
             <App />
-        </StrictMode>
-    </ThemeProvider>,
+        </ThemeProvider>
+    </StrictMode>,
 );

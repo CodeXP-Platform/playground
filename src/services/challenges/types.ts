@@ -19,3 +19,13 @@ export interface CodeTemplate {
     updatedAt: string;
     createdAt: string;
 }
+
+export interface TestCase {
+    testCaseId: string;
+    challengeId: string;
+    input: string;
+    expectedOutput: string;
+    isHidden: boolean;
+    updatedAt: string;
+    createdAt: string;
+}
