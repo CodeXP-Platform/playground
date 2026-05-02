@@ -25,3 +25,13 @@ export enum ExecutionStatus {
     PASSED = "passed",
     FAILED = "failed",
 }
+
+export interface SolutionSubmittedResponse {
+    solutionId: string;
+    attemptId: string;
+    status: ExecutionStatus;
+    currentAttempts: number;
+    maxAttempts: number;
+    remainingAttempts: number;
+    attemptsResetAt: Date | null;
+}

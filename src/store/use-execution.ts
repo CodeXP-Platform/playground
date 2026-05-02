@@ -1,12 +1,13 @@
+import type { SolutionSubmittedResponse } from "@/services/solutions/types";
 import { create } from "zustand";
 
 export interface ExecutionState {
     isSubmitting: boolean;
     executionStatus: string;
-    executionResult: any | null;
+    executionResult: SolutionSubmittedResponse | null;
     setIsSubmitting: (isSubmitting: boolean) => void;
     setExecutionStatus: (status: string) => void;
-    setExecutionResult: (result: any) => void;
+    setExecutionResult: (result: SolutionSubmittedResponse) => void;
     reset: () => void;
 }
 
