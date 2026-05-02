@@ -195,8 +195,8 @@ export function PlaygroundWorkspace({
                 {/* Center Panel: Editor */}
                 <ResizablePanel minSize={500}>
                     <section className="flex h-full flex-col">
-                        <div className="flex items-center justify-between shrink-0 border-b border-white/5 ">
-                            <div className="h-full flex items-center p-4 border-t-2 border-[#7B8BFF] text-xs font-mono">
+                        <div className="flex items-center justify-between shrink-0 border-white/5 ">
+                            <div className="h-full flex items-center p-4 border-t border-[#7B8BFF] text-xs font-mono">
                                 solution.
                                 {currentSolution.language === "python"
                                     ? "py"
