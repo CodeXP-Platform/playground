@@ -419,14 +419,44 @@ export function PlaygroundWorkspace({
                                                     </div>
 
                                                     {codeAnalysisResult !== null && (
-                                                        <div className="mt-3 pt-3 border-t border-white/5">
-                                                            <pre className="text-[11.5px] font-mono text-[#A1A1A9] overflow-x-auto whitespace-pre-wrap break-words">
-                                                                {JSON.stringify(
-                                                                    codeAnalysisResult,
-                                                                    null,
-                                                                    2,
-                                                                )}
-                                                            </pre>
+                                                        <div className="mt-4 space-y-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="flex flex-col items-center justify-center size-14 rounded-xl bg-[#09090B] border border-white/10">
+                                                                    <span className="text-[18px] font-bold text-white">
+                                                                        {codeAnalysisResult.aiScore}
+                                                                    </span>
+                                                                    <span className="text-[9px] font-semibold text-[#A1A1A9] uppercase tracking-wider -mt-0.5">
+                                                                        Score
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <h4 className="text-[12px] font-semibold text-white/90">
+                                                                        Code Analysis Complete
+                                                                    </h4>
+                                                                    <p className="text-[11px] text-[#A1A1A9] mt-0.5">
+                                                                        {codeAnalysisResult.feedback}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            {codeAnalysisResult.suggestions && codeAnalysisResult.suggestions.length > 0 && (
+                                                                <div className="pt-3 border-t border-white/5">
+                                                                    <h4 className="text-[11px] font-semibold text-[#7B8BFF] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                                                        <StarsIcon className="size-3" />
+                                                                        Suggestions
+                                                                    </h4>
+                                                                    <ul className="space-y-2">
+                                                                        {codeAnalysisResult.suggestions.map((suggestion, i) => (
+                                                                            <li
+                                                                                key={i}
+                                                                                className="text-[12px] text-[#A1A1A9] leading-relaxed pl-3 border-l-2 border-[#7B8BFF]/20"
+                                                                            >
+                                                                                {suggestion}
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>

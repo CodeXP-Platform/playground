@@ -1,16 +1,17 @@
 import { create } from "zustand";
+import type { CodeReview } from "@/services/code-analysis/types";
 
 export interface ExecutionState {
     isSubmitting: boolean;
     executionStatus: string;
     executionResult: unknown | null;
     codeAnalysisStatus: string;
-    codeAnalysisResult: unknown | null;
+    codeAnalysisResult: CodeReview | null;
     setIsSubmitting: (isSubmitting: boolean) => void;
     setExecutionStatus: (status: string) => void;
     setExecutionResult: (result: unknown) => void;
     setCodeAnalysisStatus: (status: string) => void;
-    setCodeAnalysisResult: (result: unknown) => void;
+    setCodeAnalysisResult: (result: CodeReview | null) => void;
     reset: () => void;
 }
 
