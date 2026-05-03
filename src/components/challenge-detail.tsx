@@ -1,4 +1,4 @@
-import type { Challenge } from "@/services/challenges/types";
+import type { Challenge, TestCase } from "@/services/challenges/types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -7,23 +7,43 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Link } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Check, X, EyeOff } from "lucide-react";
 
-// Utility function to unindent template literals
+interface ChallengeDetailProps {
+    challenge: Challenge;
+    tests: TestCase[];
+    executionResult: unknown | null;
+}
+
 function dedent(str: string) {
     if (!str) return "";
 
-    // Convert literal "\n" strings to actual newlines if they exist
     const normalizedStr = str.replace(/\\n/g, "\n");
 
-    // Trim every line individually to remove any leading/trailing whitespace
-    // that might cause markdown to treat headings as code blocks or text
     return normalizedStr
         .split("\n")
         .map((line) => line.trim())
         .join("\n");
 }
 
-export function ChallengeDetail({ challenge }: { challenge: Challenge }) {
+export function ChallengeDetail({ challenge, tests, executionResult }: ChallengeDetailProps) {
+    // Extract test results from executionResult to map pass/fail status
+    // We assume the result might contain an array of individual test results
+    // linked by testCaseId or some index
+    const getTestResult = (testCaseId: string, index: number): Record<string, unknown> | null => {
+        if (!executionResult) return null;
+
+        const result = executionResult as Record<string, unknown>;
+        const testResults = (result.testResults || result.results || []) as Array<Record<string, unknown>>;
+        
+        if (testResults.length > 0) {
+            return testResults.find(
+                (tr) => tr.testCaseId === testCaseId || tr.id === testCaseId || tr.index === index
+            ) || null;
+        }
+
+        return null;
+    };
     return (
         <Tabs
             defaultValue="instructions"
@@ -112,8 +132,89 @@ export function ChallengeDetail({ challenge }: { challenge: Challenge }) {
                 className="flex-1 min-h-0 outline-none m-0 data-active:flex flex-col"
             >
                 <ScrollArea className="h-full w-full">
-                    <div className="p-6 md:p-8 text-[13px] text-[#A1A1A9] flex flex-col items-center justify-center h-full mt-10 text-center opacity-50">
-                        <p>Test cases will be displayed here.</p>
+                    <div className="p-4 space-y-3">
+                        {tests.length === 0 ? (
+                            <div className="p-6 text-[13px] text-[#A1A1A9] flex flex-col items-center justify-center h-full mt-10 text-center opacity-50">
+                                <p>Test cases will be displayed here.</p>
+                            </div>
+                        ) : (
+                            tests.map((test, index) => {
+                                const testResult = getTestResult(test.testCaseId, index);
+                                const isPassed = testResult ? (testResult.passed as boolean) || (testResult.status as string) === "PASSED" : false;
+                                const isFailed = testResult ? (testResult.failed as boolean) || (testResult.status as string) === "FAILED" : false;
+
+                                return (
+                                    <div
+                                        key={test.testCaseId}
+                                        className={`
+                                            rounded-xl border p-3 transition-colors
+                                            ${isPassed ? "border-[#27C93F]/30 bg-[#27C93F]/5" : 
+                                              isFailed ? "border-destructive/30 bg-destructive/5" : 
+                                              "border-white/5 bg-[#161618]"}
+                                        `}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2 text-[12px] font-semibold text-white/80">
+                                                <span className="text-white/40">Test</span>
+                                                <span>{index + 1}</span>
+                                                {test.isHidden && (
+                                                    <span className="flex items-center gap-1 text-[10px] text-[#7B8BFF] px-1.5 py-0.5 bg-[#7B8BFF]/10 rounded-sm">
+                                                        <EyeOff className="size-3" />
+                                                        Hidden
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {executionResult !== null && (
+                                                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider">
+                                                    {isPassed ? (
+                                                        <span className="flex items-center gap-1 text-[#27C93F]">
+                                                            <Check className="size-3" />
+                                                            Passed
+                                                        </span>
+                                                    ) : isFailed ? (
+                                                        <span className="flex items-center gap-1 text-destructive">
+                                                            <X className="size-3" />
+                                                            Failed
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-[#A1A1A9] opacity-50">Pending</span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {test.isHidden ? (
+                                            <div className="text-[11px] text-[#A1A1A9] opacity-50 italic">
+                                                Test case details are hidden.
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-2 text-[12px]">
+                                                <div>
+                                                    <span className="text-[10px] font-semibold text-[#A1A1A9] uppercase tracking-wider mb-1 block">Input</span>
+                                                    <div className="bg-[#09090B] border border-white/5 rounded-lg p-2 font-mono text-[#A1A1A9] break-all">
+                                                        {test.input || "N/A"}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span className="text-[10px] font-semibold text-[#A1A1A9] uppercase tracking-wider mb-1 block">Expected Output</span>
+                                                    <div className="bg-[#09090B] border border-white/5 rounded-lg p-2 font-mono text-[#A1A1A9] break-all">
+                                                        {test.expectedOutput || "N/A"}
+                                                    </div>
+                                                </div>
+                                                {isFailed && testResult?.actualOutput !== undefined && testResult?.actualOutput !== null && (
+                                                    <div>
+                                                        <span className="text-[10px] font-semibold text-destructive uppercase tracking-wider mb-1 block">Actual Output</span>
+                                                        <div className="bg-[#09090B] border border-destructive/20 rounded-lg p-2 font-mono text-destructive break-all">
+                                                            {String(testResult.actualOutput)}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })
+                        )}
                     </div>
                 </ScrollArea>
             </TabsContent>

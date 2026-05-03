@@ -5,7 +5,7 @@ export interface CodeReview {
     status: CodeReviewStatus;
     aiScore: number;
     feedback: string;
-    suggestions: any;
+    suggestions: string[];
     createdAt: Date;
 }
 

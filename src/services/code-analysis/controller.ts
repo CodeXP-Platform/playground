@@ -4,7 +4,7 @@ import type { CodeReview } from "./types";
 export class CodeAnalysisController {
     public static async getCodeAnalysis(solutionId: string, attemptId: string) {
         const data = await http.get<CodeReview>(
-            `/api/v1/code-analysis/reviews/${solutionId}/attempts/${attemptId}`,
+            `/code-analysis/reviews/${solutionId}/attempts/${attemptId}`,
         );
         return data.data;
     }
