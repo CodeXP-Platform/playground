@@ -10,7 +10,6 @@ export function DetailsPane({
     challengePromise: Promise<Challenge>;
 }) {
     const challenge = use(challengePromise);
-    console.log("challenge id", challengeId);
     return (
         <aside className={"flex h-full min-h-0 flex-col bg-[#0a0c13]"}>
             <div className="flex-1">

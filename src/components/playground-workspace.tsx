@@ -9,6 +9,8 @@ import {
     ChevronDown,
     Play,
     StarsIcon,
+    CheckCircle2,
+    XCircle,
 } from "lucide-react";
 import { Editor } from "@monaco-editor/react";
 import { MonacoTheme } from "@/types";
@@ -251,7 +253,7 @@ export function PlaygroundWorkspace({
                                     onClick={toggleAssistant}
                                 >
                                     <StarsIcon className="size-3.5 mr-1.5" />
-                                    {isAssistantOpen ? "Hide AI" : "Ask AI"}
+                                    {isAssistantOpen ? "Hide Analysis" : "Show Analysis"}
                                 </Button>
                                 <Button
                                     size="sm"
@@ -330,17 +332,19 @@ export function PlaygroundWorkspace({
 
                         <ScrollArea className="flex-1 w-full">
                             <div className="p-4 md:p-5 space-y-6">
-                                {/* Intro Message */}
-                                <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                    <div className="size-7 shrink-0 rounded bg-[#2D2E42] flex items-center justify-center border border-white/5">
-                                        <Bot className="size-4 text-[#7B8BFF]" />
+                                {/* Intro Message — hidden once a run starts */}
+                                {!executionStatus && (
+                                    <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                        <div className="size-7 shrink-0 rounded bg-[#2D2E42] flex items-center justify-center border border-white/5">
+                                            <Bot className="size-4 text-[#7B8BFF]" />
+                                        </div>
+                                        <div className="flex-1 bg-[#161618] rounded-xl rounded-tl-none p-4 border border-white/5 text-[13px] text-[#A1A1A9] leading-relaxed shadow-sm">
+                                            I am ready to evaluate your solution.
+                                            Click the run button when you have
+                                            completed the objective.
+                                        </div>
                                     </div>
-                                    <div className="flex-1 bg-[#161618] rounded-xl rounded-tl-none p-4 border border-white/5 text-[13px] text-[#A1A1A9] leading-relaxed shadow-sm">
-                                        I am ready to evaluate your solution.
-                                        Click the run button when you have
-                                        completed the objective.
-                                    </div>
-                                </div>
+                                )}
 
                                 {/* Execution Flow as Chat */}
                                 {executionStatus && (
@@ -375,17 +379,37 @@ export function PlaygroundWorkspace({
                                                     </span>
                                                 </div>
 
-                                                {executionResult !== null && !codeAnalysisStatus && (
-                                                    <div className="mt-3 pt-3 border-t border-white/5">
-                                                        <pre className="text-[11.5px] font-mono text-[#A1A1A9] overflow-x-auto whitespace-pre-wrap break-words">
-                                                            {JSON.stringify(
-                                                                executionResult,
-                                                                null,
-                                                                2,
+                                                {executionResult !== null && !codeAnalysisStatus && (() => {
+                                                    const result = executionResult as Record<string, unknown>;
+                                                    const testResults = (result.testResults || result.results || []) as Array<Record<string, unknown>>;
+                                                    const total = testResults.length;
+                                                    const passedCount = testResults.filter(
+                                                        (tr) => tr.passed === true || tr.status === "PASSED"
+                                                    ).length;
+                                                    const isPassed = executionStatus === "PASSED";
+                                                    return (
+                                                        <div className="mt-3 pt-3 border-t border-white/5 space-y-2">
+                                                            <div className="flex items-center gap-2">
+                                                                {isPassed ? (
+                                                                    <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                                                                ) : (
+                                                                    <XCircle className="size-4 text-rose-400 shrink-0" />
+                                                                )}
+                                                                <span className={`text-[12px] font-semibold ${isPassed ? "text-emerald-400" : "text-rose-400"}`}>
+                                                                    {isPassed ? "All tests passed" : "Some tests failed"}
+                                                                </span>
+                                                            </div>
+                                                            {total > 0 && (
+                                                                <div className="flex items-center gap-1.5 text-[11px] text-[#A1A1A9]">
+                                                                    <span className="font-semibold text-white/70">{passedCount}</span>
+                                                                    <span>/</span>
+                                                                    <span className="font-semibold text-white/70">{total}</span>
+                                                                    <span>tests passed</span>
+                                                                </div>
                                                             )}
-                                                        </pre>
-                                                    </div>
-                                                )}
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
                                         

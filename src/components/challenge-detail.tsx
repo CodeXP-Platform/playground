@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import type { Challenge, TestCase } from "@/services/challenges/types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -27,9 +28,14 @@ function dedent(str: string) {
 }
 
 export function ChallengeDetail({ challenge, tests, executionResult }: ChallengeDetailProps) {
-    // Extract test results from executionResult to map pass/fail status
-    // We assume the result might contain an array of individual test results
-    // linked by testCaseId or some index
+    const [activeTab, setActiveTab] = useState("instructions");
+
+    useEffect(() => {
+        if (executionResult !== null) {
+            setActiveTab("tests");
+        }
+    }, [executionResult]);
+
     const getTestResult = (testCaseId: string, index: number): Record<string, unknown> | null => {
         if (!executionResult) return null;
 
@@ -46,7 +52,8 @@ export function ChallengeDetail({ challenge, tests, executionResult }: Challenge
     };
     return (
         <Tabs
-            defaultValue="instructions"
+            value={activeTab}
+            onValueChange={setActiveTab}
             className="flex flex-col h-full w-full"
         >
             <div className="shrink-0 border-b border-white/5 flex p-2">
