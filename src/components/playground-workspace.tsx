@@ -5,9 +5,7 @@ import { http } from "@/services/axios";
 import { CodeAnalysisController } from "@/services/code-analysis/controller";
 import {
     Loader2,
-    Send,
     Bot,
-    User,
     ChevronDown,
     Play,
     StarsIcon,
@@ -347,15 +345,6 @@ export function PlaygroundWorkspace({
                                 {/* Execution Flow as Chat */}
                                 {executionStatus && (
                                     <>
-                                        <div className="flex gap-3 flex-row-reverse animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                            <div className="size-7 shrink-0 rounded bg-[#7B8BFF] flex items-center justify-center shadow-sm">
-                                                <User className="size-4 text-black" />
-                                            </div>
-                                            <div className="bg-[#2D2E42] rounded-xl rounded-tr-none p-3 px-4 text-[13px] text-white/90 border border-[#7B8BFF]/20 shadow-sm">
-                                                Run solution
-                                            </div>
-                                        </div>
-
                                         <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                             <div className="size-7 shrink-0 rounded bg-[#2D2E42] flex items-center justify-center border border-white/5">
                                                 <Bot className="size-4 text-[#7B8BFF]" />
@@ -468,32 +457,6 @@ export function PlaygroundWorkspace({
                             </div>
                         </ScrollArea>
 
-                        {/* Input Area / Submit Button */}
-                        <div className="shrink-0 p-4 bg-[#111113] border-t border-white/5 z-10">
-                            <div className="flex items-center gap-2 bg-[#000000] border border-white/5 p-1.5 pl-4 rounded-xl shadow-inner">
-                                <input
-                                    type="text"
-                                    disabled
-                                    placeholder={
-                                        isSubmitting
-                                            ? "Processing..."
-                                            : "Ask Lumina or run code..."
-                                    }
-                                    className="flex-1 bg-transparent border-none outline-none text-[13px] text-white/50 cursor-not-allowed"
-                                />
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={isSubmitting}
-                                    className="size-8 shrink-0 flex items-center justify-center rounded-lg bg-[#161618] hover:bg-[#2D2E42] text-[#7B8BFF] disabled:opacity-50 transition-colors border border-white/5 shadow-sm"
-                                >
-                                    {isSubmitting ? (
-                                        <Loader2 className="size-4 animate-spin" />
-                                    ) : (
-                                        <Send className="size-4" />
-                                    )}
-                                </button>
-                            </div>
-                        </div>
                     </aside>
                 </ResizablePanel>
             </ResizablePanelGroup>

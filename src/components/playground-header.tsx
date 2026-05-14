@@ -1,5 +1,5 @@
 import type { Solution } from "@/services/solutions/types";
-import { Search, Settings } from "lucide-react";
+import { LayoutDashboard, Search, Settings, User } from "lucide-react";
 import { Javascript } from "./ui/svgs/javascript";
 import { Python } from "./ui/svgs/python";
 import {
@@ -11,6 +11,14 @@ import {
 } from "@/components/ui/select";
 import { Button } from "./ui/button";
 import type { Challenge } from "@/services/challenges/types";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import useAuth from "@/store/use-auth";
 
 export function PlaygroundHeader({
     solutions,
@@ -23,8 +31,13 @@ export function PlaygroundHeader({
     setCurrentSolution: (solution: Solution) => void;
     challenge: Challenge;
 }) {
+    const user = useAuth((s) => s.user);
     const CurrentIcon =
         currentSolution.language === "python" ? Python : Javascript;
+
+    const initials = user?.nickname
+        ? user.nickname.slice(0, 2).toUpperCase()
+        : (user?.email?.slice(0, 2).toUpperCase() ?? "??");
 
     return (
         <header className="h-12 shrink-0 flex items-center justify-between px-4 border-b">
@@ -80,13 +93,37 @@ export function PlaygroundHeader({
             </div>
 
             {/* Actions (Right) */}
-            <div className="space-x-1">
+            <div className="flex items-center gap-1">
                 <Button size={"icon"} variant={"ghost"}>
                     <Search className="size-4 cursor-pointer" />
                 </Button>
                 <Button size={"icon"} variant={"ghost"}>
                     <Settings className="size-4 cursor-pointer" />
                 </Button>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <Avatar className="size-8 cursor-pointer">
+                            <AvatarFallback className="text-xs">
+                                {initials}
+                            </AvatarFallback>
+                        </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-40">
+                        <DropdownMenuItem>
+                            <User className="size-4" />
+                            <a href="http://localhost:3000/dashboard/profile">
+                                View Profile
+                            </a>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <LayoutDashboard className="size-4" />
+                            <a href="http://localhost:3000/dashboard">
+                                Go to Dashboard
+                            </a>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </header>
     );
