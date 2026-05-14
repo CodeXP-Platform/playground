@@ -2,6 +2,7 @@ import { useState, use, useEffect, useRef } from "react";
 import { SolutionsController } from "@/services/solutions/controller";
 import type { Solution } from "@/services/solutions/types";
 import { http } from "@/services/axios";
+import { CodeAnalysisController } from "@/services/code-analysis/controller";
 import {
     Loader2,
     Send,
@@ -52,8 +53,6 @@ export function PlaygroundWorkspace({
         Solution | undefined
     >(solutions.find((s) => s.codeTemplateId === codeTemplateId));
 
-    const [currentTests, setCurrentTests] = useState(tests);
-
     const [code, setCode] = useState(currentSolution?.code || "");
     const [isAssistantOpen, setIsAssistantOpen] = useState(true);
 
@@ -64,9 +63,13 @@ export function PlaygroundWorkspace({
         isSubmitting,
         executionStatus,
         executionResult,
+        codeAnalysisStatus,
+        codeAnalysisResult,
         setIsSubmitting,
         setExecutionStatus,
         setExecutionResult,
+        setCodeAnalysisStatus,
+        setCodeAnalysisResult,
         reset,
     } = useExecutionStore();
 
@@ -80,7 +83,7 @@ export function PlaygroundWorkspace({
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [executionStatus, executionResult]);
+    }, [executionStatus, executionResult, codeAnalysisStatus, codeAnalysisResult]);
 
     const handleCodeChange = (newCode: string | undefined) => {
         setCode(newCode || "");
@@ -105,6 +108,8 @@ export function PlaygroundWorkspace({
 
         setIsSubmitting(true);
         setExecutionResult(null);
+        setCodeAnalysisResult(null);
+        setCodeAnalysisStatus("");
         setExecutionStatus("Updating code...");
 
         try {
@@ -114,10 +119,12 @@ export function PlaygroundWorkspace({
             );
 
             setExecutionStatus("Submitting...");
-            await SolutionsController.submitSolution(
+            const submitResponse = await SolutionsController.submitSolution(
                 currentSolution.solutionId,
                 code,
             );
+            
+            const attemptId = submitResponse.attemptId;
 
             setExecutionStatus("Queued...");
             let status = "QUEUED";
@@ -150,6 +157,37 @@ export function PlaygroundWorkspace({
                             "Solution failed. Check the assistant logs.",
                         );
                     }
+                    
+                    // Start polling code analysis
+                    if (attemptId) {
+                        setCodeAnalysisStatus("QUEUED");
+                        let analysisStatus = "QUEUED";
+                        let analysisAttempts = 0;
+                        
+                        while(
+                            (analysisStatus === "QUEUED" || analysisStatus === "GENERATING") &&
+                            analysisAttempts < 60
+                        ) {
+                            await delay(3000);
+                            try {
+                                const analysis = await CodeAnalysisController.getCodeAnalysis(
+                                    currentSolution.solutionId,
+                                    attemptId
+                                );
+                                analysisStatus = analysis.status;
+                                setCodeAnalysisStatus(analysisStatus);
+                                
+                                if (analysisStatus === "COMPLETED") {
+                                    setCodeAnalysisResult(analysis);
+                                    break;
+                                }
+                            } catch (error) {
+                                console.error("Error polling code analysis:", error);
+                            }
+                            analysisAttempts++;
+                        }
+                    }
+
                     break;
                 }
             }
@@ -184,7 +222,11 @@ export function PlaygroundWorkspace({
             <ResizablePanelGroup className="flex-1 min-h-0">
                 {/* Left Panel: Objective & Tests */}
                 <ResizablePanel minSize={250} defaultSize={300} maxSize={400}>
-                    <ChallengeDetail challenge={challenge} />
+                    <ChallengeDetail 
+                        challenge={challenge} 
+                        tests={tests}
+                        executionResult={executionResult}
+                    />
                 </ResizablePanel>
 
                 <ResizableHandle
@@ -344,7 +386,7 @@ export function PlaygroundWorkspace({
                                                     </span>
                                                 </div>
 
-                                                {executionResult && (
+                                                {executionResult !== null && !codeAnalysisStatus && (
                                                     <div className="mt-3 pt-3 border-t border-white/5">
                                                         <pre className="text-[11.5px] font-mono text-[#A1A1A9] overflow-x-auto whitespace-pre-wrap break-words">
                                                             {JSON.stringify(
@@ -357,6 +399,69 @@ export function PlaygroundWorkspace({
                                                 )}
                                             </div>
                                         </div>
+                                        
+                                        {/* Code Analysis Feedback */}
+                                        {codeAnalysisStatus && (
+                                            <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4">
+                                                <div className="size-7 shrink-0 rounded bg-[#2D2E42] flex items-center justify-center border border-white/5">
+                                                    <Bot className="size-4 text-[#7B8BFF]" />
+                                                </div>
+                                                <div className="flex-1 bg-[#161618] rounded-xl rounded-tl-none p-4 border border-white/5 text-[13px] shadow-sm">
+                                                    <div className="flex items-center gap-2 text-[#A1A1A9]">
+                                                        {(codeAnalysisStatus === "QUEUED" || codeAnalysisStatus === "GENERATING") && (
+                                                            <Loader2 className="size-3.5 animate-spin text-[#7B8BFF]" />
+                                                        )}
+                                                        <span className="text-[#7B8BFF]">
+                                                            {codeAnalysisStatus === "QUEUED" ? "Code analysis queued..." :
+                                                             codeAnalysisStatus === "GENERATING" ? "Analyzing code..." :
+                                                             "Code analysis complete"}
+                                                        </span>
+                                                    </div>
+
+                                                    {codeAnalysisResult !== null && (
+                                                        <div className="mt-4 space-y-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="flex flex-col items-center justify-center size-14 rounded-xl bg-[#09090B] border border-white/10">
+                                                                    <span className="text-[18px] font-bold text-white">
+                                                                        {codeAnalysisResult.aiScore}
+                                                                    </span>
+                                                                    <span className="text-[9px] font-semibold text-[#A1A1A9] uppercase tracking-wider -mt-0.5">
+                                                                        Score
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <h4 className="text-[12px] font-semibold text-white/90">
+                                                                        Code Analysis Complete
+                                                                    </h4>
+                                                                    <p className="text-[11px] text-[#A1A1A9] mt-0.5">
+                                                                        {codeAnalysisResult.feedback}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            {codeAnalysisResult.suggestions && codeAnalysisResult.suggestions.length > 0 && (
+                                                                <div className="pt-3 border-t border-white/5">
+                                                                    <h4 className="text-[11px] font-semibold text-[#7B8BFF] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                                                        <StarsIcon className="size-3" />
+                                                                        Suggestions
+                                                                    </h4>
+                                                                    <ul className="space-y-2">
+                                                                        {codeAnalysisResult.suggestions.map((suggestion, i) => (
+                                                                            <li
+                                                                                key={i}
+                                                                                className="text-[12px] text-[#A1A1A9] leading-relaxed pl-3 border-l-2 border-[#7B8BFF]/20"
+                                                                            >
+                                                                                {suggestion}
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
                                     </>
                                 )}
                                 <div ref={messagesEndRef} className="h-1" />
