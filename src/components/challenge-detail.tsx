@@ -9,6 +9,9 @@ import { Link } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Check, X, EyeOff } from "lucide-react";
+import type { CSSProperties } from "react";
+
+const syntaxHighlighterStyle = vscDarkPlus as { [key: string]: CSSProperties };
 
 interface ChallengeDetailProps {
     challenge: Challenge;
@@ -74,15 +77,16 @@ export function ChallengeDetail({ challenge, tests, executionResult }: Challenge
                                 remarkPlugins={[remarkGfm]}
                                 rehypePlugins={[rehypeRaw]}
                                 components={{
-                                    code({ className, children, ...rest }) {
+                                    code({ className, children, ref, ...rest }) {
                                         const match = /language-(\w+)/.exec(
                                             className || "",
                                         );
                                         return match ? (
                                             <SyntaxHighlighter
+                                                {...rest}
                                                 PreTag="div"
                                                 language={match[1]}
-                                                style={vscDarkPlus}
+                                                style={syntaxHighlighterStyle}
                                                 customStyle={{
                                                     margin: "1.5em 0",
                                                     borderRadius: "0.75rem",
@@ -90,7 +94,6 @@ export function ChallengeDetail({ challenge, tests, executionResult }: Challenge
                                                     border: "1px solid rgba(255,255,255,0.05)",
                                                     backgroundColor: "#09090B",
                                                 }}
-                                                {...rest}
                                             >
                                                 {String(children).replace(
                                                     /\n$/,
@@ -99,6 +102,7 @@ export function ChallengeDetail({ challenge, tests, executionResult }: Challenge
                                             </SyntaxHighlighter>
                                         ) : (
                                             <code
+                                                ref={ref}
                                                 className="bg-[#1A1A1E] text-[#A1A1A9] px-1.5 py-0.5 rounded-md border border-white/5 text-[12px] font-mono"
                                                 {...rest}
                                             >

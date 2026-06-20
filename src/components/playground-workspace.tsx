@@ -26,7 +26,7 @@ import { ChallengeDetail } from "./challenge-detail";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { ImperativePanelHandle } from "react-resizable-panels";
+import type { PanelImperativeHandle } from "react-resizable-panels";
 
 interface PlaygroundWorkspaceProps {
     challengeId: string;
@@ -56,7 +56,7 @@ export function PlaygroundWorkspace({
     const [code, setCode] = useState(currentSolution?.code || "");
     const [isAssistantOpen, setIsAssistantOpen] = useState(true);
 
-    const assistantPanelRef = useRef<ImperativePanelHandle>(null);
+    const assistantPanelRef = useRef<PanelImperativeHandle>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -305,14 +305,15 @@ export function PlaygroundWorkspace({
 
                 {/* Right Panel: Neural Assistant / Execution */}
                 <ResizablePanel
-                    ref={assistantPanelRef}
+                    panelRef={assistantPanelRef}
                     collapsible={true}
                     minSize={250}
                     defaultSize={300}
                     maxSize={400}
                     collapsedSize={0}
-                    onCollapse={() => setIsAssistantOpen(false)}
-                    onExpand={() => setIsAssistantOpen(true)}
+                    onResize={(panelSize) =>
+                        setIsAssistantOpen(panelSize.inPixels > 0)
+                    }
                 >
                     <aside className="flex h-full flex-col">
                         <div className="flex items-center justify-between shrink-0 h-10 border-b border-white/5 px-4 bg-[#111113]">
